@@ -5,7 +5,7 @@ class CreateAssets < ActiveRecord::Migration
       t.string  :data_content_type
       t.integer :data_file_size
 
-      t.integer :assetable_id, :null => false
+      t.integer :assetable_id, :default => 0
       t.string  :assetable_type, :limit => 30, :null => false
       t.string  :type, :limit => 30
 
