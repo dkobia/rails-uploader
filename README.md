@@ -11,7 +11,7 @@ Preview:
 In Gemfile:
 
 ```
-gem "glebtv-rails-uploader"
+gem "rails-uploader", :git => "git://github.com/dkobia/rails-uploader.git"
 ```
 
 In routes:
@@ -34,11 +34,13 @@ Architecture to store uploaded files (cancan integration):
 class Asset < ActiveRecord::Base
   include Uploader::Asset
 
+  belongs_to :assetable, polymorphic: true
+
   def uploader_create(params, request = nil)
     ability = Ability.new(request.env['warden'].user)
 
     if ability.can? :create, self
-      self.user = request.env['warden'].user
+      self.user_id = request.env['warden'].user.id
       super
     else
       errors.add(:id, :access_denied)
@@ -57,13 +59,12 @@ class Asset < ActiveRecord::Base
 end
 
 class Picture < Asset
-  mount_uploader :data, PictureUploader
+  mount_uploader :data, PictureUploader, :mount_on => :data_file_name
 
   validates_integrity_of :data
-  validates_filesize_of :data, :maximum => 2.megabytes.to_i
 
   # structure of returned json array of files. (used in Hash.to_json operation)
-  def serializable_hash(options=nil)
+  def to_jq_upload(options=nil)
     {
         "id" => id.to_s,
         "filename" => File.basename(data.path),

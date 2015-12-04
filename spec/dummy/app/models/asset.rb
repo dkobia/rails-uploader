@@ -11,7 +11,7 @@
 #  type              :string(25)
 #  guid              :string(10)
 #  user_id           :integer(4)
-#  sort_order        :integer(4)      default(0)
+#  sort              :integer(4)      default(0)
 #  created_at        :datetime
 #  updated_at        :datetime
 #
@@ -22,6 +22,6 @@
 #
 class Asset < ActiveRecord::Base
   include Uploader::Asset
-  
+
   belongs_to :assetable, :polymorphic => true
 end
